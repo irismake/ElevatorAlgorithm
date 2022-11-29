@@ -10,6 +10,7 @@ void main() {
   int moveTime = 1;
   int waitTime = 2;
   int finalTime;
+  int viaNumber = 0;
 
   List<int> via = [];
 
@@ -65,6 +66,7 @@ void main() {
       via.add(rnd);
     }
   }
+  via.sort();
   print("The floor to pass is $via");
 
 //엘리베이터 방향 , 나의 방향 비교
@@ -77,9 +79,33 @@ void main() {
     //같은 방향일때
     if ((min < myFloor) && (myFloor < max)) {
       // 나를 경유할때
-      if (via.contains(myFloor)) {
-        ;
+
+      //올라갈때
+      if (elvDir_1 == 1) {
+        for (int i = 0; i < via.length; i++) {
+          int a = via[i];
+
+          if (a >= myFloor) {
+            break;
+          }
+          viaNumber++;
+        }
+        print(viaNumber);
+      } else {
+        List<int> reversedVia = List.from(via.reversed);
+        //내려갈때
+        for (int i = 0; i < reversedVia.length; i++) {
+          int a = reversedVia[i];
+
+          if (a <= myFloor) {
+            break;
+          }
+          viaNumber++;
+        }
+        print(viaNumber);
       }
+
+      finalTime = moveTime * (max - myFloor).abs() + viaNumber * waitTime;
     } else {
       // 나를 경유하지 않을때
       finalTime = moveTime * (max - min) +
