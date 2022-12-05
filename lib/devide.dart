@@ -8,8 +8,9 @@ void main() {
   int elevatorMin = -5;
   int elevatorMax = 15;
   int? myDir;
+  int? evenElevator, oddElevator;
 
-  print("Input your floor");
+  print("\nInput your floor");
   int? myFloor = int.parse(stdin.readLineSync()!);
   print("Input your destination");
   int? myDest = int.parse(stdin.readLineSync()!);
@@ -34,10 +35,20 @@ void main() {
 
   myClass myclass = myClass(evenFloor, oddFloor, myDir, myFloor);
 
-  if (myDest % 2 == 0) {
+  if (evenFloor.contains(myDest) && evenFloor.contains(myFloor)) {
     myclass.even();
-  } else {
+    evenElevator = myclass.numberOfCasesEven();
+  }
+  if (oddFloor.contains(myDest) && oddFloor.contains(myFloor)) {
     myclass.odd();
+    oddElevator = myclass.numberOfCasesOdd();
+  }
+  if (evenElevator! > oddElevator!) {
+    print("Take the even-numbered floor elevator\n");
+  } else if (evenElevator < oddElevator) {
+    print("Take the odd-numbered floor elevator\n");
+  } else if (evenElevator == oddElevator) {
+    print("Take any elevator :)\n");
   }
 }
 
@@ -60,9 +71,8 @@ class myClass {
   List<int> oddVia = [];
 
   even() {
-    int evenRnd = Random().nextInt(14) + 1; // 1~13 중 랜덤으로 경유 숫자 선택
-
-    print(evenRnd);
+    print("---------- Even-numbered elevator ----------");
+    int evenRnd = Random().nextInt(14) + 1; // 1~14 중 랜덤으로 경유할 층의 개수 선택
 
     while (evenRnd > evenViaList.length) {
       int ran = Random().nextInt(13); // list 원소 가져오기
@@ -73,30 +83,24 @@ class myClass {
     }
 
     evenViaList.sort(); //정렬
-    evenViaListMax = evenViaList.first;
-    evenViaListMin = evenViaList.last;
-    print(evenViaList);
-    print(evenViaListMax);
-    print(evenViaListMin);
 
     for (int i = 0; i < evenViaList.length; i++) {
       int x = evenFloor[evenViaList[i]];
       evenVia.add(x);
     }
 
-    print(evenVia);
+    print("The floors that even-numbered elevators pass through is $evenVia");
     evenMin = evenVia.first;
     evenMax = evenVia.last;
     evenDir = Random().nextInt(1);
   }
 
   odd() {
-    int oddRnd = Random().nextInt(12) + 1; // 1~12 중 랜덤으로 경유 숫자 선택
-
-    print(oddRnd);
+    print("---------- Odd-numbered elevator ----------");
+    int oddRnd = Random().nextInt(13) + 1; // 1~13 중 랜덤으로 경유 숫자 선택
 
     while (oddRnd > oddViaList.length) {
-      int ran = Random().nextInt(11); // list 원소 가져오기
+      int ran = Random().nextInt(12); // list 원소 가져오기
 
       if (!oddViaList.contains(ran)) {
         oddViaList.add(ran);
@@ -104,17 +108,16 @@ class myClass {
     }
 
     oddViaList.sort();
-    print(oddViaList);
 
     for (int i = 0; i < oddViaList.length; i++) {
       int x = oddFloor[oddViaList[i]];
       oddVia.add(x);
     }
 
-    print(oddVia);
-    oddMin = oddVia[0];
-    oddMax = oddVia[oddRnd - 1];
+    print("The floors that even-numbered elevators pass through is $oddVia");
 
+    oddMin = oddVia.first;
+    oddMax = oddVia.last;
     oddDir = Random().nextInt(1);
   }
 
@@ -125,30 +128,59 @@ class myClass {
     int waitTime = 2;
     int via = evenVia.length - 2;
     int viaNumber = 0;
-
+    int waitNumber;
+    int? evenViaPath;
+    int? evenMovePath;
     if (evenDir == 0) {
       //down
       evenDest = evenMin;
       evenStart = evenMax;
+      print("Elevator direction is down");
     } else {
       //up
       evenDest = evenMax;
       evenStart = evenMin;
+      print("Elevator direction is up");
+    }
+
+    if (evenDest! * evenStart! < -1) {
+      evenMovePath = (evenDest - evenStart).abs() - 1;
+    } else if (evenDest * evenStart == -1) {
+      evenMovePath = 1;
+    } else {
+      evenMovePath = (evenDest - evenStart).abs();
+    }
+
+    if (evenVia.length <= 2) {
+      waitNumber = 0;
+    } else {
+      waitNumber = evenVia.length - 2;
+      // 엘리베이터가 경우하는 층의 수
     }
 
     if (myDir != evenDir) {
       //다른 방향일때
-      finalTime = moveTime * (evenViaListMax! - evenViaListMin!) +
-          waitTime * (evenVia.length) +
-          (evenDest! - myFloor).abs() * moveTime;
-      print("elevator direction != my direction \n It takes $finalTime\n");
+      if (evenDest * myFloor < -1) {
+        evenViaPath = (evenDest - myFloor).abs() - 1;
+      } else if (evenDest * myFloor == -1) {
+        evenViaPath == 1;
+      } else {
+        evenViaPath = (evenDest - myFloor).abs();
+      }
+
+      finalTime = moveTime * evenMovePath +
+          waitTime * waitNumber +
+          evenViaPath! * moveTime;
+      print(
+          "elevator direction != my direction \nEven-numbered elevator takes $finalTime\n");
     } else {
       //같은 방향일때
-      if ((evenDest! < myFloor) && (myFloor < evenStart!)) {
+      if ((evenDest < myFloor) && (myFloor < evenStart)) {
         // 나를 경유할때
-        print("the elevator goes through me\n");
-        //올라갈때
+        print("the elevator goes through me");
+
         if (evenDir == 1) {
+          //같은 방향, 나를 경유, 올라갈때
           for (int i = 1; i < via; i++) {
             int a = evenVia[i];
 
@@ -157,12 +189,16 @@ class myClass {
             }
             viaNumber++;
           }
-          print("wait $viaNumber times\n");
-          finalTime = moveTime * (evenViaListMax! - evenViaListMin!).abs() +
-              viaNumber * waitTime;
+          if (evenStart * myFloor <= -1) {
+            evenViaPath = (evenStart - myFloor).abs() - 1;
+          } else {
+            evenViaPath = (evenStart - myFloor).abs();
+          }
+          print("pass $viaNumber times");
+          finalTime = moveTime * evenViaPath + viaNumber * waitTime;
         } else {
           List<int> reversedVia = List.from(evenVia.reversed);
-          //내려갈때
+          //같은 방향, 나를 경유, 내려갈때
           for (int i = 1; i < reversedVia.length; i++) {
             int a = reversedVia[i];
 
@@ -171,22 +207,151 @@ class myClass {
             }
             viaNumber++;
           }
-          print("wait $viaNumber times\n");
-          finalTime = moveTime * (evenViaListMax! - evenViaListMin!).abs() +
-              viaNumber * waitTime;
+          if (evenStart * myFloor <= -1) {
+            evenViaPath = (evenStart - myFloor).abs() - 1;
+          } else {
+            evenViaPath = (evenStart - myFloor).abs();
+          }
+          print("pass $viaNumber times");
+          finalTime = moveTime * evenViaPath + viaNumber * waitTime;
         }
-
-        print("the elevator goes through me\n");
-      } else if (myFloor == evenStart!) {
+      } else if (myFloor == evenStart) {
         finalTime = 0;
       } else {
         // 나를 경유하지 않을때
-        finalTime = moveTime * (evenViaListMax! - evenViaListMin!).abs() +
-            waitTime * evenVia.length +
-            (evenDest - myFloor).abs() * moveTime;
+        if (evenDest * myFloor < -1) {
+          evenViaPath = (evenDest - myFloor).abs() - 1;
+        } else if (evenDest * myFloor == -1) {
+          evenViaPath = 1;
+        } else {
+          evenViaPath = (evenDest - myFloor).abs();
+        }
+        finalTime = moveTime * evenMovePath.abs() +
+            waitTime * waitNumber +
+            evenViaPath * moveTime;
+
         print("the elevator dosen't go through me\n");
       }
-      print("elevator direction == my direction \n\nIt takes $finalTime");
+      print(
+          "elevator direction == my direction \nEven-numbered elevator takes $finalTime\n");
     }
+    return finalTime;
+  }
+
+  numberOfCasesOdd() {
+    int? oddDest, oddStart;
+    int finalTime;
+    int moveTime = 1;
+    int waitTime = 2;
+    int via = oddVia.length - 2;
+    int viaNumber = 0;
+    int waitNumber;
+    int? oddViaPath;
+    int? oddMovePath;
+    if (oddDir == 0) {
+      //down
+      oddDest = oddMin;
+      oddStart = oddMax;
+      print("Elevator direction is down");
+    } else {
+      //up
+      oddDest = oddMax;
+      oddStart = oddMin;
+      print("Elevator direction is up");
+    }
+
+    if (oddDest! * oddStart! < -1) {
+      oddMovePath = (oddDest - oddStart).abs() - 1;
+    } else if (oddDest * oddStart == -1) {
+      oddMovePath = 1;
+    } else {
+      oddMovePath = (oddDest - oddStart).abs();
+    }
+
+    if (oddVia.length <= 2) {
+      waitNumber = 0;
+    } else {
+      waitNumber = oddVia.length - 2;
+      // 엘리베이터가 경우하는 층의 수
+    }
+
+    if (myDir != oddDir) {
+      //다른 방향일때
+      if (oddDest * myFloor < -1) {
+        oddViaPath = (oddDest - myFloor).abs() - 1;
+      } else if (oddDest * myFloor == -1) {
+        oddViaPath == 1;
+      } else {
+        oddViaPath = (oddDest - myFloor).abs();
+      }
+
+      finalTime = moveTime * oddMovePath +
+          waitTime * waitNumber +
+          oddViaPath! * moveTime;
+      print(
+          "elevator direction != my direction \nOdd-numbered elevator takes $finalTime\n");
+    } else {
+      //같은 방향일때
+      if ((oddDest < myFloor) && (myFloor < oddStart)) {
+        // 나를 경유할때
+        print("the elevator goes through me");
+
+        if (oddDir == 1) {
+          //같은 방향, 나를 경유, 올라갈때
+          for (int i = 1; i < via; i++) {
+            int a = oddVia[i];
+
+            if (a >= myFloor) {
+              break;
+            }
+            viaNumber++;
+          }
+          if (oddStart * myFloor <= -1) {
+            oddViaPath = (oddStart - myFloor).abs() - 1;
+          } else {
+            oddViaPath = (oddStart - myFloor).abs();
+          }
+          print("pass $viaNumber times");
+          finalTime = moveTime * oddViaPath + viaNumber * waitTime;
+        } else {
+          List<int> reversedVia = List.from(oddVia.reversed);
+          //같은 방향, 나를 경유, 내려갈때
+          for (int i = 1; i < reversedVia.length; i++) {
+            int a = reversedVia[i];
+
+            if (a <= myFloor) {
+              break;
+            }
+            viaNumber++;
+          }
+          if (oddStart * myFloor <= -1) {
+            oddViaPath = (oddStart - myFloor).abs() - 1;
+          } else {
+            oddViaPath = (oddStart - myFloor).abs();
+          }
+          print("pass $viaNumber times");
+          finalTime = moveTime * oddViaPath + viaNumber * waitTime;
+        }
+      } else if (myFloor == oddStart) {
+        finalTime = 0;
+      } else {
+        // 나를 경유하지 않을때
+        if (oddDest * myFloor < -1) {
+          oddViaPath = (oddDest - myFloor).abs() - 1;
+        } else if (oddDest * myFloor == -1) {
+          oddViaPath = 1;
+        } else {
+          oddViaPath = (oddDest - myFloor).abs();
+        }
+        finalTime = moveTime * oddMovePath.abs() +
+            waitTime * waitNumber +
+            oddViaPath * moveTime;
+
+        print("the elevator dosen't go through me\n");
+      }
+      print(
+          "elevator direction == my direction\nOdd-numbered elevator takes $finalTime\n");
+    }
+    return finalTime;
   }
 }
