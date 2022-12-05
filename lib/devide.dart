@@ -43,12 +43,14 @@ void main() {
     myclass.odd();
     oddElevator = myclass.numberOfCasesOdd();
   }
-  if (evenElevator! > oddElevator!) {
-    print("Take the even-numbered floor elevator\n");
-  } else if (evenElevator < oddElevator) {
-    print("Take the odd-numbered floor elevator\n");
-  } else if (evenElevator == oddElevator) {
-    print("Take any elevator :)\n");
+  if (evenElevator != null && oddElevator != null) {
+    if (evenElevator > oddElevator) {
+      print("Take the even-numbered floor elevator\n");
+    } else if (evenElevator < oddElevator) {
+      print("Take the odd-numbered floor elevator\n");
+    } else if (evenElevator == oddElevator) {
+      print("Take any elevator :)\n");
+    }
   }
 }
 
