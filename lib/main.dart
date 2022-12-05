@@ -92,7 +92,7 @@ void main() {
     //같은 방향일때
     if ((min < myFloor) && (myFloor <= max)) {
       // 나를 경유할때
-
+      print("the elevator goes through me\n");
       //올라갈때
       if (elvDir_1 == 1) {
         for (int i = 0; i < via.length; i++) {
@@ -103,6 +103,8 @@ void main() {
           }
           viaNumber++;
         }
+        print("wait $viaNumber times\n");
+        finalTime = moveTime * (myFloor - min) + viaNumber * waitTime;
       } else {
         List<int> reversedVia = List.from(via.reversed);
         //내려갈때
@@ -114,11 +116,9 @@ void main() {
           }
           viaNumber++;
         }
+        print("wait $viaNumber times\n");
+        finalTime = moveTime * (max - myFloor) + viaNumber * waitTime;
       }
-      print("wait $viaNumber times\n");
-
-      finalTime = moveTime * (min - myFloor).abs() + viaNumber * waitTime;
-      print("the elevator goes through me\n");
     } else if (myFloor == min) {
       return;
     } else {
