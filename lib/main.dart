@@ -54,8 +54,10 @@ void main() {
   }
 
   myClass myclass = myClass(elevatorFloor, myDir, myFloor);
+
   myclass.elevator();
   elevatorWaitingTime = myclass.numberOfCases();
+  print(elevatorWaitingTime);
 }
 
 class myClass {
@@ -66,7 +68,6 @@ class myClass {
   int? Min;
   int? Max;
   int? elevatorDir;
-  int? elvViaListMin, elvViaListMax;
 
   List<int> elvViaList = [];
   List<int> elvVia = [];
@@ -102,9 +103,9 @@ class myClass {
     int moveTime = 1;
     int waitTime = 2;
     int via = elvVia.length - 2;
-    int viaNumber = 0;
-    int waitNumber;
-    int? ViaPath;
+    int passedViaNumber = 0;
+    int viaNumber;
+    int? pathToMyFloor;
     int? MovePath;
     if (elevatorDir == 0) {
       //down
@@ -127,24 +128,25 @@ class myClass {
     }
 
     if (elvVia.length <= 2) {
-      waitNumber = 0;
+      viaNumber = 0;
     } else {
-      waitNumber = elvVia.length - 2;
+      viaNumber = elvVia.length - 2;
       // 엘리베이터가 경우하는 층의 수
     }
 
     if (myDir != elevatorDir) {
       //다른 방향일때
       if (elvDest * myFloor < -1) {
-        ViaPath = (elvDest - myFloor).abs() - 1;
+        pathToMyFloor = (elvDest - myFloor).abs() - 1;
       } else if (elvDest * myFloor == -1) {
-        ViaPath == 1;
+        pathToMyFloor == 1;
       } else {
-        ViaPath = (elvDest - myFloor).abs();
+        pathToMyFloor = (elvDest - myFloor).abs();
       }
 
-      finalTime =
-          moveTime * MovePath + waitTime * waitNumber + ViaPath! * moveTime;
+      finalTime = moveTime * MovePath +
+          waitTime * viaNumber +
+          pathToMyFloor! * moveTime;
       print(
           "elevator direction != my direction \nEven-numbered elevator takes $finalTime\n");
     } else {
@@ -161,15 +163,15 @@ class myClass {
             if (a >= myFloor) {
               break;
             }
-            viaNumber++;
+            passedViaNumber++;
           }
           if (elvStart * myFloor <= -1) {
-            ViaPath = (elvStart - myFloor).abs() - 1;
+            pathToMyFloor = (elvStart - myFloor).abs() - 1;
           } else {
-            ViaPath = (elvStart - myFloor).abs();
+            pathToMyFloor = (elvStart - myFloor).abs();
           }
-          print("Pass $viaNumber times");
-          finalTime = moveTime * ViaPath + viaNumber * waitTime;
+          print("Pass $passedViaNumber times");
+          finalTime = moveTime * pathToMyFloor + passedViaNumber * waitTime;
         } else {
           List<int> reversedVia = List.from(elvVia.reversed);
           //같은 방향, 나를 경유, 내려갈때
@@ -179,30 +181,30 @@ class myClass {
             if (a <= myFloor) {
               break;
             }
-            viaNumber++;
+            passedViaNumber++;
           }
           if (elvStart * myFloor <= -1) {
-            ViaPath = (elvStart - myFloor).abs() - 1;
+            pathToMyFloor = (elvStart - myFloor).abs() - 1;
           } else {
-            ViaPath = (elvStart - myFloor).abs();
+            pathToMyFloor = (elvStart - myFloor).abs();
           }
-          print("Pass $viaNumber times");
-          finalTime = moveTime * ViaPath + viaNumber * waitTime;
+          print("Pass $passedViaNumber times");
+          finalTime = moveTime * pathToMyFloor + passedViaNumber * waitTime;
         }
       } else if (myFloor == elvStart) {
         finalTime = 0;
       } else {
         // 나를 경유하지 않을때
         if (elvDest * myFloor < -1) {
-          ViaPath = (elvDest - myFloor).abs() - 1;
+          pathToMyFloor = (elvDest - myFloor).abs() - 1;
         } else if (elvDest * myFloor == -1) {
-          ViaPath = 1;
+          pathToMyFloor = 1;
         } else {
-          ViaPath = (elvDest - myFloor).abs();
+          pathToMyFloor = (elvDest - myFloor).abs();
         }
-        finalTime = moveTime * MovePath.abs() +
-            waitTime * waitNumber +
-            ViaPath * moveTime;
+        finalTime = moveTime * MovePath +
+            waitTime * viaNumber +
+            pathToMyFloor * moveTime;
 
         print("the elevator dosen't go through me\n");
       }
