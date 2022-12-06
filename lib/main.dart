@@ -77,7 +77,7 @@ class myClass {
     int evenRnd = Random().nextInt(20) + 1; // 1~20 중 랜덤으로 경유할 층의 개수 선택
 
     while (evenRnd > elvViaList.length) {
-      int ran = Random().nextInt(20); // list 원소 가져오기
+      int ran = Random().nextInt(19); // list 원소 가져오기
 
       if (!elvViaList.contains(ran)) {
         elvViaList.add(ran);

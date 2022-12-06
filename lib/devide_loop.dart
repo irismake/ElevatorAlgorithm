@@ -83,7 +83,7 @@ class myClass {
     int evenRnd = Random().nextInt(14) + 1; // 1~14 중 랜덤으로 경유할 층의 개수 선택
 
     while (evenRnd > evenViaList.length) {
-      int ran = Random().nextInt(14); // list 원소 가져오기
+      int ran = Random().nextInt(13); // list 원소 가져오기
 
       if (!evenViaList.contains(ran)) {
         evenViaList.add(ran);
@@ -108,7 +108,7 @@ class myClass {
     int oddRnd = Random().nextInt(13) + 1; // 1~13 중 랜덤으로 경유 숫자 선택
 
     while (oddRnd > oddViaList.length) {
-      int ran = Random().nextInt(13); // list 원소 가져오기
+      int ran = Random().nextInt(12); // list 원소 가져오기
 
       if (!oddViaList.contains(ran)) {
         oddViaList.add(ran);
