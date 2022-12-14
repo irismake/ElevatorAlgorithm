@@ -47,9 +47,9 @@ void main() {
       selectedTime = oddElevator;
     }
     if (evenElevator != null && oddElevator != null) {
-      if (evenElevator > oddElevator) {
+      if (evenElevator < oddElevator) {
         selectedTime = evenElevator;
-      } else if (evenElevator <= oddElevator) {
+      } else if (evenElevator >= oddElevator) {
         selectedTime = oddElevator;
       }
     }
